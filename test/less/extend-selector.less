@@ -9,7 +9,7 @@
 .intrusion .error {
   display: none;
 }
-.badError:extend(.error) {
+.badError:extend(.error all) {
   border-width: 3px;
 }
 
@@ -18,11 +18,11 @@
 }
 
 .ext1 .ext2
-    :extend(.foo) {
+    :extend(.foo all) {
 }
 
-.ext3:extend(.foo),
-.ext4:extend(.foo) {
+.ext3:extend(.foo all),
+.ext4:extend(.foo all) {
 }
 
 div.ext5,
@@ -31,23 +31,80 @@ div.ext5,
 }
 
 .should-not-exist-in-output,
-.ext7:extend(.ext5) {
+.ext7:extend(.ext5 all) {
 }
 
 .ext {
   test: 1;
 }
-// same as 
-// .a .c:extend(.ext)
-// .b .c:extend(.ext)
+// same as
+// .a .c:extend(.ext all)
+// .b .c:extend(.ext all)
 // .a .c .d
 // .b .c .d
 .a, .b {
   test: 2;
-  .c:extend(.ext) {
+  .c:extend(.ext all) {
     test: 3;
     .d {
       test: 4;
     }
   }
+}
+
+.replace.replace,
+.c.replace + .replace {
+  .replace,
+  .c {
+    prop: copy-paste-replace;
+  }
+}
+.rep_ace:extend(.replace all) {}
+
+.attributes {
+  [data="test"] {
+    extend: attributes;
+  }
+  .attribute-test {
+    &:extend([data="test"] all);
+  }
+  [data] {
+    extend: attributes2;
+  }
+  .attribute-test2 {
+    &:extend([data] all); //you could argue it should match [data="test"]... not for now though...
+  }
+  @attr-data: "test3";
+  [data=@{attr-data}] {
+    extend: attributes2;
+  }
+  .attribute-test {
+    &:extend([data="test3"] all);
+  }
+}
+
+.header {
+  .header-nav {
+    background: red;
+    &:before {
+      background: blue;
+    }
+  }
+}
+
+.footer {
+  .footer-nav {
+    &:extend( .header .header-nav all );
+  }
+}
+
+.issue-2586-bordered {
+    border: solid 1px black;
+}
+.issue-2586-somepage {
+    .content:extend(.issue-2586-bordered) {
+        &>span {
+            margin-bottom: 10px;
+        }
+    }
 }
